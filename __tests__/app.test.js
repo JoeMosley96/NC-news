@@ -3,13 +3,14 @@ const request = require ("supertest")
 const app = require("../app")
 const connection = require("../db/connection")
 const seed = require("../db/seeds/seed")
+const endpoints = require("../endpoints.json")
 
 
 beforeEach(()=>{
 return seed({topicData, articleData, userData, commentData})
 })
 
-afterAll(()=>{connection.end})
+afterAll(()=>{connection.end()})
 
 describe('GET /api/topics', () => {
     it('200: should respond with a 200 status code ', () => {
@@ -61,4 +62,28 @@ describe('GET /api/topics', () => {
             expect(data.body.msg).toBe("Not found");
         })
       })
+});
+
+describe.only('GET /api', () => {
+    it('200: should respond with a 200 status code', () => {
+        return request(app)
+        .get("/api")
+        .expect(200)        
+    });
+    it('200: should return the endpoints json file', () => {
+        return request(app)
+        .get("/api")
+        .then((data)=>{
+            expect(data.body.endpoints).toEqual(endpoints)
+        })        
+    });
+    it('200: should return the endpoints json file', () => {
+        return request(app)
+        .get("/api")
+        .then((data)=>{
+            expect(data.body.endpoints).toEqual(endpoints)
+        })        
+    });
+
+    
 });
