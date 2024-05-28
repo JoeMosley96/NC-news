@@ -47,13 +47,13 @@ describe('GET /api/topics', () => {
         return request(app)
         .get("/notARoute")
         .expect(404)
-        .then(()=>{
+        .then((data)=>{
             expect(data.body.msg).toBe("Route not found")
         })
       })
 });
 
-describe.only('GET /api', () => {
+describe('GET /api', () => {
     it('200: should respond with a 200 status code', () => {
         return request(app)
         .get("/api")
