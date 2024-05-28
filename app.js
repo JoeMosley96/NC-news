@@ -4,9 +4,15 @@ const {getEndpoints} = require("./controllers/api.controllers")
 
 const app = express()
 
+//requests
 app.get("/api/topics", getTopics)
 
 app.get("/api", getEndpoints)
+
+//catch all middleware block
+app.all('*', (req, res) => {
+    res.status(404).send({msg: "Route not found"})
+      })
 
 //error handling middleware starts here
 app.use((err, req, res, next) => {

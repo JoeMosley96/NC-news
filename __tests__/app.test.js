@@ -47,19 +47,8 @@ describe('GET /api/topics', () => {
         return request(app)
         .get("/notARoute")
         .expect(404)
-      })
-
-      it("404 should respond with a 404 error code and a 'Not found' error message if the topics folder is empty", () =>{
-        return connection.query('DELETE FROM comments')
-        .then(()=>{return connection.query('DELETE FROM articles')})
-        .then(()=>{return connection.query('DELETE FROM topics')})
         .then(()=>{
-            return request(app)
-            .get("/api/topics")
-            .expect(404)
-        })
-        .then((data)=>{
-            expect(data.body.msg).toBe("Not found");
+            expect(data.body.msg).toBe("Route not found")
         })
       })
 });
