@@ -6,24 +6,30 @@ const seed = require("../db/seeds/seed")
 const endpoints = require("../endpoints.json")
 
 
+beforeEach(() => {
+  return seed(data);
+});
+
+
 beforeEach(()=>{
 return seed(data)
 })
 
 afterAll(()=>{connection.end()})
 
-describe('GET /api/topics', () => {
-    it('200: should respond with a 200 status code ', () => {
-        return request(app).get("/api/topics").expect(200)
-    });
 
-    it("200: should return an array", () => {
-        return request(app)
-          .get("/api/topics")
-          .then((data) => {
-            expect(Array.isArray(data.body)).toBe(true);
-          });
+describe("GET /api/topics", () => {
+  it("200: should respond with a 200 status code ", () => {
+    return request(app).get("/api/topics").expect(200);
+  });
+
+  it("200: should return an array", () => {
+    return request(app)
+      .get("/api/topics")
+      .then((data) => {
+        expect(Array.isArray(data.body)).toBe(true);
       });
+  });
 
       it("200 should respond with an array of all topics", () => {
         return request(app)
@@ -39,18 +45,34 @@ describe('GET /api/topics', () => {
               });
             });
           });
-      });
+        });
 
-      it("404 should respond with a 404 error code if passed an invalid route", () =>{
-        return request(app)
-        .get("/notARoute")
-        .expect(404)
-        .then(()=>{
-            expect(data.body.msg).toBe("Route not found")
-        })
+  it("200 should respond with an empty array if the topics folder is empty", () => {
+    return connection
+      .query("DELETE FROM comments")
+      .then(() => {
+        return connection.query("DELETE FROM articles");
       })
-});
+      .then(() => {
+        return connection.query("DELETE FROM topics");
+      })
+      .then(() => {
+        return request(app).get("/api/topics").expect(200);
+      })
+      .then((data) => {
+        expect(data.body).toEqual([]);
+      });
+  });
 
+  it("404 should respond with a 404 error code if passed an invalid route", () => {
+    return request(app)
+      .get("/notARoute")
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Route not found");
+      });
+  });
+  
 describe('GET /api', () => {
     it('200: should respond with a 200 status code', () => {
         return request(app)
@@ -72,7 +94,7 @@ describe('GET /api', () => {
         })        
     });
 
-describe.only('GET /api/articles/:article_id', () => {
+describe('GET /api/articles/:article_id', () => {
     it('200: should return a valid article object when passed a valid article id',() =>{
       return request(app)
       .get("/api/articles/2")
