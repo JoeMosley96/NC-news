@@ -72,6 +72,8 @@ describe("GET /api/topics", () => {
         expect(data.body.msg).toBe("Route not found");
       });
   });
+
+})
   
 describe('GET /api', () => {
     it('200: should respond with a 200 status code', () => {
@@ -93,6 +95,8 @@ describe('GET /api', () => {
             expect(data.body.endpoints).toEqual(endpoints)
         })        
     });
+
+  })
 
 describe('GET /api/articles/:article_id', () => {
     it('200: should return a valid article object when passed a valid article id',() =>{
@@ -134,5 +138,3 @@ describe('GET /api/articles/:article_id', () => {
   
 });
 
-    
-});
