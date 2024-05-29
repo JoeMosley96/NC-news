@@ -203,7 +203,7 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("topic");
       });
   });
-  it.only("200: can accept an author query", () => {
+  it("200: can accept an author query", () => {
     return request(app)
       .get("/api/articles?author=icellusedkars")
       .expect(200)
@@ -225,7 +225,7 @@ describe("GET /api/articles", () => {
       });
   });
 
-  it.only("200: can accept a topic query", () => {
+  it("200: can accept a topic query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
@@ -247,7 +247,7 @@ describe("GET /api/articles", () => {
       });
   });
 
-  it.only("200: can accept multiple queries at once", () => {
+  it("200: can accept multiple queries at once", () => {
     return request(app)
       .get("/api/articles?topic=mitch&author=rogersop&sort_by=title&order=asc")
       .expect(200)
@@ -295,4 +295,44 @@ describe("GET /api/articles", () => {
         expect(data.body.msg).toBe("Route not found");
       });
   });
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+  it('200: should respond with all comments for the given article ID', () => {
+    return request(app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then(({body})=>{
+      const comments = body.comments
+      expect(comments).toHaveLength(11);
+      comments.forEach((comment) => {
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          body: expect.any(String),
+          author: expect.any(String),
+          article_id: expect.any(Number),
+          created_at: expect.any(String)
+        });
+      });
+
+    })
+  });
+  it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
+    return request(app)
+      .get("/api/articles/1000/comments")
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Not found");
+      });
+  });
+  it("400: should return a 400 error message when passed an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/pigeon/comments")
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+  
 });

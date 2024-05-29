@@ -93,11 +93,24 @@ const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
               article.comment_count = 0;
             }
           });
-
           return table;
         }
       });
     });
 };
 
-module.exports = { fetchArticle, fetchArticles };
+const fetchComments = (article_id) =>{
+
+    let sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
+    const queryValues = [article_id];
+    return db.query(sqlQuery, queryValues).then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      } else {
+        return rows;
+      }
+    });
+
+}
+
+module.exports = { fetchArticle, fetchArticles, fetchComments};
