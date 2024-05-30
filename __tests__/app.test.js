@@ -93,8 +93,8 @@ describe("GET /api", () => {
   });
 });
 
-describe("GET /api/articles/:article_id", () => {
-  it("200: should return a valid article object when passed a valid article id", () => {
+describe.only("GET /api/articles/:article_id", () => {
+  it("200: should return a valid article object when passed a valid article id for an article with no votes", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
@@ -112,6 +112,26 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
+  it("200: should return a valid article object with a comment count when passed a valid article id for an article with votes", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 2,
+        });
+      });
+  });
+
   it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
     return request(app)
       .get("/api/articles/1000")
