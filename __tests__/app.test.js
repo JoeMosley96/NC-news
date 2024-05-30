@@ -324,7 +324,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const comments = body.comments;
-        expect(comments).toEqual([])
+        expect(comments).toEqual([]);
       });
   });
   it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
@@ -364,7 +364,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           votes: 50000,
           author: "icellusedkars",
           article_id: 1,
-          created_at: expect.any(String)
+          created_at: expect.any(String),
         });
       });
   });
@@ -389,12 +389,12 @@ describe("POST /api/articles/:article_id/comments", () => {
       author: "icellusedkars",
     };
     return request(app)
-    .post("/api/articles/pigeon/comments")
-    .send(newComment)
-    .expect(400)
-    .then((data) => {
-      expect(data.body.msg).toBe("Bad request");
-    });
+      .post("/api/articles/pigeon/comments")
+      .send(newComment)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
   });
 
   it("404: should return a 404 error message when passed a non-existant author name", () => {
@@ -411,4 +411,91 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(data.body.msg).toBe("User not found");
       });
   });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  it("200: should return the selected article with the correct new number of votes - where article initially has no votes", () => {
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(voteObj)
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toMatchObject({
+          article_id: 2,
+          title: "Sony Vaio; or, The Laptop",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+          created_at: "2020-10-16T05:03:00.000Z",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          votes: 3,
+        });
+      });
+  });
+  it("200: should return the selected article with the correct new number of votes - where article already has votes", () => {
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteObj)
+      .expect(200)
+      .then((data) => {
+        expect(data.body.article).toMatchObject(  {
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 103,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  it('404: should respond with a 404 error if the article id is well formed but non-existant', () => {
+    const voteObj = {inc_votes: 3};
+    return request(app)
+    .patch("/api/articles/10000")
+    .send(voteObj)
+    .expect(404)
+    .then((data)=>{
+      expect(data.body.msg).toBe("Article not found")
+    })
+    
+  });
+  it('400: should respond with a 400 error if the article id is not well formed', () => {
+    const voteObj = {inc_votes: 3};
+    return request(app)
+    .patch("/api/articles/clogs")
+    .send(voteObj)
+    .expect(400)
+    .then((data)=>{
+      expect(data.body.msg).toBe("Bad request")
+    })
+  });
+
+  it('400: should respond with a 400 error if the request body contains an invalid key', () => {
+    const voteObj = {inc_votez: 3};
+    return request(app)
+    .patch("/api/articles/1")
+    .send(voteObj)
+    .expect(400)
+    .then((data)=>{
+      expect(data.body.msg).toBe("Bad request")
+    })
+  });
+  it('400: should respond with a 400 error if the request body contains an invalid value', () => {
+    const voteObj = {inc_votes: "clogs"};
+    return request(app)
+    .patch("/api/articles/1")
+    .send(voteObj)
+    .expect(400)
+    .then((data)=>{
+      expect(data.body.msg).toBe("Bad request")
+    })
+  });
+
+
 });
