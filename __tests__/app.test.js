@@ -350,7 +350,6 @@ describe.only("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const comment = body.comment;
-        console.log(comment);
         expect(comment).toMatchObject({
           comment_id: 19,
           body: "this is terrible and i hate it",

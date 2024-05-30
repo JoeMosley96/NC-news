@@ -136,7 +136,6 @@ const writeComment = (article_id, { body, votes, author }) => {
               [body, votes, article_id, author]
             )
             .then((result) => {
-              console.log(result.rows[0]);
               return result.rows[0];
             });
         }
