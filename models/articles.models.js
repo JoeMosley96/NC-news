@@ -117,7 +117,7 @@ const writeComment = (article_id, { body, votes, author }) => {
 
   let sqlQuery = 'SELECT * FROM users WHERE username = $1'
   let queryValues = [author]
-  
+
   return db.query(sqlQuery, queryValues).then(({rows})=>{
     if(!rows.length){
       return Promise.reject({status: 404, msg: "User not found"});
@@ -136,7 +136,6 @@ const writeComment = (article_id, { body, votes, author }) => {
               [body, votes, article_id, author]
             )
             .then((result) => {
-              console.log(result.rows[0]);
               return result.rows[0];
             });
         }
