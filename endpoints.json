@@ -48,12 +48,26 @@
   "queries":[],
   "exampleResponse":    {
     "comment":{
-        "comment_id": 1,
-        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        "votes": 16,
-        "author": "butter_bridge",
-        "article_id": 9,
-        "created_at": 1586179020000
+      "comment_id": 19,
+      "body": "this is terrible and i hate it",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 50000,
+      "created_at": "2024-05-30T09:20:45.864Z"
+      }
+  }
+},
+"POST /api/articles/:article_id/comments": {
+  "description":"posts a comment to the given article id",
+  "queries":["article_id", "comment"],
+  "exampleResponse":    {
+    "comment":{
+      "comment_id": 19,
+      "body": "this is terrible and i hate it",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 50000,
+      "created_at": "2024-05-30T09:20:45.864Z"
       }
   }
 }
