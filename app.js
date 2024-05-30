@@ -33,6 +33,8 @@ app.all('*', (req, res) => {
       })
 
 //error handling middleware starts here
+
+//psql errors go here - ie. errors arising from a db.query
 app.use((err, req, res, next) => {
     if (err.code) {
       res.status(400).send({ msg: "Bad request" });
