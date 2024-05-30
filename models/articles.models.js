@@ -5,7 +5,7 @@ const fetchArticle = (id) => {
   const queryValues = [id];
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     if (!rows.length) {
-      return Promise.reject({ status: 404, msg: "Not found" });
+      return Promise.reject({ status: 404, msg: "Article not found" });
     } else {
       return rows[0];
     }
@@ -102,15 +102,25 @@ const fetchArticles = (
 };
 
 const fetchComments = (article_id) => {
-  let sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
-  const queryValues = [article_id];
+  let sqlQuery = "SELECT * FROM articles WHERE article_id = $1"
+  let queryValues = [article_id]
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not found" });
     } else {
-      return rows;
+      sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
+      return db.query(sqlQuery, queryValues).then(({ rows }) => {
+        if (!rows.length) {
+          return [];
+        } else {
+          return rows;
+        }
+      });
     }
   });
+
+
+
 };
 
 const writeComment = (article_id, { body, votes, author }) => {
@@ -140,10 +150,6 @@ const writeComment = (article_id, { body, votes, author }) => {
             });
         }
       });
-
-
-
-
 
     }
 

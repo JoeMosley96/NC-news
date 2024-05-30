@@ -117,7 +117,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1000")
       .expect(404)
       .then((data) => {
-        expect(data.body.msg).toBe("Not found");
+        expect(data.body.msg).toBe("Article not found");
       });
   });
   it("400: should return a 400 error message when passed an invalid article id", () => {
@@ -306,17 +306,25 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const comments = body.comments;
         expect(comments).toHaveLength(11);
-        console.log(comments)
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
             body: expect.any(String),
             author: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 1,
             created_at: expect.any(String),
           });
         });
+      });
+  });
+  it("200: should respond with an empty array if the article id is valid but there are no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toEqual([])
       });
   });
   it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
@@ -324,7 +332,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1000/comments")
       .expect(404)
       .then((data) => {
-        expect(data.body.msg).toBe("Not found");
+        expect(data.body.msg).toBe("Article not found");
       });
   });
   it("400: should return a 400 error message when passed an invalid article id", () => {
@@ -337,7 +345,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   it("201: should post a new comment to the given article", () => {
     const newComment = {
       body: "this is terrible and i hate it",
