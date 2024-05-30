@@ -102,8 +102,8 @@ const fetchArticles = (
 };
 
 const fetchComments = (article_id) => {
-  let sqlQuery = "SELECT * FROM articles WHERE article_id = $1"
-  let queryValues = [article_id]
+  let sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
+  let queryValues = [article_id];
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not found" });
@@ -118,20 +118,16 @@ const fetchComments = (article_id) => {
       });
     }
   });
-
-
-
 };
 
 const writeComment = (article_id, { body, votes, author }) => {
+  let sqlQuery = "SELECT * FROM users WHERE username = $1";
+  let queryValues = [author];
 
-  let sqlQuery = 'SELECT * FROM users WHERE username = $1'
-  let queryValues = [author]
-  
-  return db.query(sqlQuery, queryValues).then(({rows})=>{
-    if(!rows.length){
-      return Promise.reject({status: 404, msg: "User not found"});
-    }else{
+  return db.query(sqlQuery, queryValues).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "User not found" });
+    } else {
       sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
       queryValues = [article_id];
       return db.query(sqlQuery, queryValues).then(({ rows }) => {
@@ -150,13 +146,37 @@ const writeComment = (article_id, { body, votes, author }) => {
             });
         }
       });
-
     }
-
-  })
-
-
-
+  });
 };
 
-module.exports = { fetchArticle, fetchArticles, fetchComments, writeComment };
+const changeArticle = (article_id, inc_votes) => {
+  let sqlQuery = "SELECT votes FROM articles WHERE article_id = $1";
+  let queryValues = [article_id];
+
+    return db
+      .query(sqlQuery, queryValues)
+      .then(({ rows }) => {
+        if (!rows.length) {
+          return Promise.reject({ status: 404, msg: "Article not found" });
+        } else {
+          const newVotes = inc_votes + rows[0].votes;
+          sqlQuery =
+            "UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *";
+          queryValues = [newVotes, article_id];
+          return db.query(sqlQuery, queryValues);
+        }
+      })
+      .then(({ rows }) => {
+    
+        return rows[0];
+      });
+};
+
+module.exports = {
+  fetchArticle,
+  fetchArticles,
+  fetchComments,
+  writeComment,
+  changeArticle,
+};
