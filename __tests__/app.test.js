@@ -531,3 +531,60 @@ describe("DELETE /api/comments/:comment_id", () => {
     
   });
 });
+
+describe("GET /api/users", () => {
+  it("200: should respond with a 200 status code ", () => {
+    return request(app).get("/api/users").expect(200);
+  });
+
+  it("200: should return an array", () => {
+    return request(app)
+      .get("/api/users")
+      .then((data) => {
+        expect(Array.isArray(data.body)).toBe(true);
+      });
+  });
+
+  it("200 should respond with an array of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url : expect.any(String)
+          });
+        });
+      });
+  });
+
+  // it("200 should respond with an empty array if the users folder is empty", () => {
+  //   return connection
+  //     .query("DELETE FROM comments")
+  //     .then(() => {
+  //       return connection.query("DELETE FROM articles");
+  //     })
+  //     .then(() => {
+  //       return connection.query("DELETE FROM users");
+  //     })
+  //     .then(() => {
+  //       return request(app).get("/api/users").expect(200);
+  //     })
+  //     .then((data) => {
+  //       expect(data.body).toEqual([]);
+  //     });
+  // });
+
+  it("404 should respond with a 404 error code if passed an invalid route", () => {
+    return request(app)
+      .get("/notARoute")
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Route not found");
+      });
+  });
+});
