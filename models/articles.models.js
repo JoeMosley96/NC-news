@@ -1,7 +1,6 @@
 const db = require("../db/connection");
 
 const fetchArticle = (id) => {
-
   let sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
   const queryValues = [id];
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
@@ -13,8 +12,13 @@ const fetchArticle = (id) => {
   });
 };
 
-const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
-    //check sql queries are on green list
+const fetchArticles = (
+  author,
+  topic,
+  sort_by = "created_at",
+  order = "DESC"
+) => {
+  //check sql queries are on green list
   if (
     ![
       "author",
@@ -43,15 +47,14 @@ const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
     `
     )
     .then(({ rows }) => {
-
-    //use this info to create lookup object
+      //use this info to create lookup object
       const comment_counts = rows;
       const lookupObj = {};
       comment_counts.forEach((article) => {
         lookupObj[article.article_id] = Number(article.comment_count);
       });
 
-    //initialise SQL query
+      //initialise SQL query
       let sqlQuery = `
         SELECT author, title, article_id, topic, created_at, votes, article_img_url 
         FROM articles `;
@@ -59,16 +62,16 @@ const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
       const queryValues = [];
 
       //extend sqlQuery string to accomodate author and topic queries
-      if(author){
-        sqlQuery += `WHERE author = $1 `
-        queryValues.push(author)
-        if(topic){
-        sqlQuery += `AND topic = $2 `
-        queryValues.push(topic)
+      if (author) {
+        sqlQuery += `WHERE author = $1 `;
+        queryValues.push(author);
+        if (topic) {
+          sqlQuery += `AND topic = $2 `;
+          queryValues.push(topic);
         }
-      } else if(topic){
-        sqlQuery +=`WHERE topic = $1 `
-        queryValues.push(topic)
+      } else if (topic) {
+        sqlQuery += `WHERE topic = $1 `;
+        queryValues.push(topic);
       }
 
       //add order by queries to sqlQuery string
@@ -77,12 +80,11 @@ const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
 
       //query database again to get the rest of the information required
       return db.query(sqlQuery, queryValues).then(({ rows }) => {
-
         const table = rows;
         //reject with a 404 if nothing is found
         if (!table.length) {
           return Promise.reject({ status: 404, msg: "Not found" });
-        } 
+        }
 
         //use lookup object to append comment counts to each article
         else {
@@ -99,18 +101,57 @@ const fetchArticles = (author,topic,sort_by = "created_at", order = "DESC") => {
     });
 };
 
-const fetchComments = (article_id) =>{
+const fetchComments = (article_id) => {
+  let sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
+  const queryValues = [article_id];
+  return db.query(sqlQuery, queryValues).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "Article not found" });
+    } else {
+      return rows;
+    }
+  });
+};
 
-    let sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
-    const queryValues = [article_id];
-    return db.query(sqlQuery, queryValues).then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "Not found" });
-      } else {
-        return rows;
-      }
-    });
+const writeComment = (article_id, { body, votes, author }) => {
 
-}
+  let sqlQuery = 'SELECT * FROM users WHERE username = $1'
+  let queryValues = [author]
+  
+  return db.query(sqlQuery, queryValues).then(({rows})=>{
+    if(!rows.length){
+      return Promise.reject({status: 404, msg: "User not found"});
+    }else{
+      sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
+      queryValues = [article_id];
+      return db.query(sqlQuery, queryValues).then(({ rows }) => {
+        if (!rows.length) {
+          return Promise.reject({ status: 404, msg: "Article not found" });
+        } else {
+          return db
+            .query(
+              `INSERT INTO comments
+              (body, votes, article_id, author)
+              values ($1, $2, $3, $4) RETURNING *`,
+              [body, votes, article_id, author]
+            )
+            .then((result) => {
+              console.log(result.rows[0]);
+              return result.rows[0];
+            });
+        }
+      });
 
-module.exports = { fetchArticle, fetchArticles, fetchComments};
+
+
+
+
+    }
+
+  })
+
+
+
+};
+
+module.exports = { fetchArticle, fetchArticles, fetchComments, writeComment };
