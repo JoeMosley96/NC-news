@@ -147,7 +147,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(Number)
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -158,9 +158,9 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles
-      
-        expect(articles).toBeSortedBy("created_at",{descending: true});
+        const articles = body.articles;
+
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 
@@ -169,7 +169,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles
+        const articles = body.articles;
         expect(articles[0]).toMatchObject({
           author: "icellusedkars",
           title: "Eight pug gifs that remind me of mitch",
@@ -177,19 +177,21 @@ describe("GET /api/articles", () => {
           topic: "mitch",
           created_at: "2020-11-03T09:12:00.000Z",
           votes: 0,
-          article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          comment_count: 2
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 2,
         });
         expect(articles[2]).toMatchObject({
-          author: 'icellusedkars',
-          title: 'Sony Vaio; or, The Laptop',
+          author: "icellusedkars",
+          title: "Sony Vaio; or, The Laptop",
           article_id: 2,
-          topic: 'mitch',
-          created_at: '2020-10-16T05:03:00.000Z',
+          topic: "mitch",
+          created_at: "2020-10-16T05:03:00.000Z",
           votes: 0,
-          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-          comment_count: 0
-        })
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 0,
+        });
       });
   });
 
@@ -198,8 +200,8 @@ describe("GET /api/articles", () => {
       .get("/api/articles?sort_by=topic&order=asc")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles
-      
+        const articles = body.articles;
+
         expect(articles).toBeSortedBy("topic");
       });
   });
@@ -219,7 +221,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(Number)
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -241,7 +243,7 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(Number)
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -254,7 +256,7 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toHaveLength(2);
-        expect(articles).toBeSortedBy("topic")
+        expect(articles).toBeSortedBy("topic");
         articles.forEach((article) => {
           expect(article).toMatchObject({
             author: "rogersop",
@@ -264,11 +266,10 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(Number)
+            comment_count: expect.any(Number),
           });
         });
       });
-      
   });
 
   it("400: responds with an error message when passed an invalid sort_by query", () => {
@@ -297,26 +298,26 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe('GET /api/articles/:article_id/comments', () => {
-  it('200: should respond with all comments for the given article ID', () => {
+describe("GET /api/articles/:article_id/comments", () => {
+  it("200: should respond with all comments for the given article ID", () => {
     return request(app)
-    .get("/api/articles/1/comments")
-    .expect(200)
-    .then(({body})=>{
-      const comments = body.comments
-      expect(comments).toHaveLength(11);
-      comments.forEach((comment) => {
-        expect(comment).toMatchObject({
-          comment_id: expect.any(Number),
-          votes: expect.any(Number),
-          body: expect.any(String),
-          author: expect.any(String),
-          article_id: expect.any(Number),
-          created_at: expect.any(String)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(11);
+        console.log(comments)
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            body: expect.any(String),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          });
         });
       });
-
-    })
   });
   it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
     return request(app)
@@ -334,5 +335,73 @@ describe('GET /api/articles/:article_id/comments', () => {
         expect(data.body.msg).toBe("Bad request");
       });
   });
-  
+});
+
+describe.only("POST /api/articles/:article_id/comments", () => {
+  it("201: should post a new comment to the given article", () => {
+    const newComment = {
+      body: "this is terrible and i hate it",
+      votes: 50000,
+      author: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+        console.log(comment);
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "this is terrible and i hate it",
+          votes: 50000,
+          author: "icellusedkars",
+          article_id: 1,
+          created_at: expect.any(String)
+        });
+      });
+  });
+  it("404: should return a 404 error message when passed a well formed but non existant article id", () => {
+    const newComment = {
+      body: "this is terrible and i hate it",
+      votes: 50000,
+      author: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/100000/comments")
+      .send(newComment)
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Article not found");
+      });
+  });
+  it("400: should return a 400 error message when passed an invalid article id", () => {
+    const newComment = {
+      body: "this is terrible and i hate it",
+      votes: 50000,
+      author: "icellusedkars",
+    };
+    return request(app)
+    .post("/api/articles/pigeon/comments")
+    .send(newComment)
+    .expect(400)
+    .then((data) => {
+      expect(data.body.msg).toBe("Bad request");
+    });
+  });
+
+  it("404: should return a 404 error message when passed a non-existant author name", () => {
+    const newComment = {
+      body: "this is terrible and i hate it",
+      votes: 50000,
+      author: "brian",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("User not found");
+      });
+  });
 });
