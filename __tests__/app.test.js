@@ -441,7 +441,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(voteObj)
       .expect(200)
       .then((data) => {
-        expect(data.body.article).toMatchObject(  {
+        expect(data.body.article).toMatchObject({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -454,48 +454,80 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-  it('404: should respond with a 404 error if the article id is well formed but non-existant', () => {
-    const voteObj = {inc_votes: 3};
+  it("404: should respond with a 404 error if the article id is well formed but non-existant", () => {
+    const voteObj = { inc_votes: 3 };
     return request(app)
-    .patch("/api/articles/10000")
-    .send(voteObj)
+      .patch("/api/articles/10000")
+      .send(voteObj)
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Article not found");
+      });
+  });
+  it("400: should respond with a 400 error if the article id is not well formed", () => {
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/articles/clogs")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+
+  it("400: should respond with a 400 error if the request body contains an invalid key", () => {
+    const voteObj = { inc_votez: 3 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+  it("400: should respond with a 400 error if the request body contains an invalid value", () => {
+    const voteObj = { inc_votes: "clogs" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("204: should remove ride from the database", () => {
+    return request(app)
+      .delete("/api/comments/10")
+      .expect(204)
+      .then(() => {
+        return connection.query(
+          `SELECT * FROM comments
+            WHERE comment_id = 10`
+        );
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(0);
+      }); 
+  })
+  it('404: should respond with a 404 error message if the comment id is well formed but non-existant', () => {
+    return request(app)
+    .delete("/api/comments/10000")
     .expect(404)
-    .then((data)=>{
-      expect(data.body.msg).toBe("Article not found")
-    })
+    .then((data) => {
+      expect(data.body.msg).toBe("Comment not found");
+    });
     
   });
-  it('400: should respond with a 400 error if the article id is not well formed', () => {
-    const voteObj = {inc_votes: 3};
+  it('400: should respond with a 400 error message if the comment id is not well formed', () => {
     return request(app)
-    .patch("/api/articles/clogs")
-    .send(voteObj)
+    .delete("/api/comments/greyhound")
     .expect(400)
-    .then((data)=>{
-      expect(data.body.msg).toBe("Bad request")
-    })
+    .then((data) => {
+      expect(data.body.msg).toBe("Bad request");
+    });
+    
   });
-
-  it('400: should respond with a 400 error if the request body contains an invalid key', () => {
-    const voteObj = {inc_votez: 3};
-    return request(app)
-    .patch("/api/articles/1")
-    .send(voteObj)
-    .expect(400)
-    .then((data)=>{
-      expect(data.body.msg).toBe("Bad request")
-    })
-  });
-  it('400: should respond with a 400 error if the request body contains an invalid value', () => {
-    const voteObj = {inc_votes: "clogs"};
-    return request(app)
-    .patch("/api/articles/1")
-    .send(voteObj)
-    .expect(400)
-    .then((data)=>{
-      expect(data.body.msg).toBe("Bad request")
-    })
-  });
-
-
 });
