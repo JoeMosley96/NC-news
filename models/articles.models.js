@@ -1,16 +1,35 @@
 const db = require("../db/connection");
 
 const fetchArticle = (id) => {
-  let sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
+   //query database to find comment count for given article
+  let sqlQuery =`
+  SELECT article_id, COUNT(*) AS comment_count
+  FROM comments
+  WHERE article_id = $1
+  GROUP BY article_id`
   const queryValues = [id];
-  return db.query(sqlQuery, queryValues).then(({ rows }) => {
+  return db
+  .query(sqlQuery,queryValues)
+  .then(({ rows }) => {
+    //use this info to create lookup object
+    const lookupObj = {};
+    rows.forEach((article) => {
+      lookupObj[article.article_id] = Number(article.comment_count);
+    });
+
+   //query database again to find rest of information required
+  sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
+  return db.query(sqlQuery, queryValues)
+  .then(({ rows }) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not found" });
     } else {
+      rows[0].comment_count = lookupObj[rows[0].article_id]
       return rows[0];
     }
   });
-};
+})
+}
 
 const fetchArticles = (
   author,
