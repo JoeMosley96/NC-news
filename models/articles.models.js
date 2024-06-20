@@ -129,7 +129,7 @@ const writeComment = (article_id, { body, votes, author }) => {
     .query(sqlQuery, queryValues)
     .then(({ rows }) => {
       if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "User not found" });
+        return Promise.reject({ status: 404, msg: `${author} not found` });
       } else {
         sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
         queryValues = [article_id];

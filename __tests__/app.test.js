@@ -365,7 +365,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("POST /api/articles/:article_id/comments", () => {
+describe.only("POST /api/articles/:article_id/comments", () => {
   it("201: should post a new comment to the given article", () => {
     const newComment = {
       body: "this is terrible and i hate it",

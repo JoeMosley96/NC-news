@@ -42,6 +42,7 @@ const postComment = (req, res, next)=>{
     const commentBody = req.body
     writeComment(article_id,commentBody)
     .then((data)=>{
+        console.log(data)
         res.status(201).send({comment:data})
     })
     .catch((err)=>{
