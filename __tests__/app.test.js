@@ -318,7 +318,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("GET /api/articles/:article_id/comments", () => {
+describe.only("GET /api/articles/:article_id/comments", () => {
   it("200: should respond with all comments for the given article ID", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -552,7 +552,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe.only("GET /api/users", () => {
+describe("GET /api/users", () => {
   it("200: should respond with a 200 status code ", () => {
     return request(app).get("/api/users").expect(200);
   });

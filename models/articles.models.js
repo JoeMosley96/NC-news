@@ -108,9 +108,10 @@ const fetchComments = (article_id) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not found" });
     } else {
-      sqlQuery = "SELECT * FROM comments WHERE article_id = $1";
+      sqlQuery = "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC";
       return db.query(sqlQuery, queryValues)
       .then(({ rows }) => {
+        console.log(rows)
         if (!rows.length) {
           return [];
         } else {
