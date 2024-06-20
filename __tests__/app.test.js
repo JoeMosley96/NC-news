@@ -365,7 +365,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   it("201: should post a new comment to the given article", () => {
     const newComment = {
       body: "this is terrible and i hate it",
@@ -433,7 +433,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   it("200: should return the selected article with the correct new number of votes - where article initially has no votes", () => {
     const voteObj = { inc_votes: 3 };
     return request(app)
@@ -552,7 +552,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe("GET /api/users", () => {
+describe.only("GET /api/users", () => {
   it("200: should respond with a 200 status code ", () => {
     return request(app).get("/api/users").expect(200);
   });
@@ -560,8 +560,9 @@ describe("GET /api/users", () => {
   it("200: should return an array", () => {
     return request(app)
       .get("/api/users")
-      .then((data) => {
-        expect(Array.isArray(data.body)).toBe(true);
+      .then(({body}) => {
+        const {users} = body
+        expect(Array.isArray(users)).toBe(true);
       });
   });
 
@@ -570,7 +571,7 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        const users = body;
+        const {users} = body;
         expect(users).toHaveLength(4);
         users.forEach((user) => {
           expect(user).toMatchObject({
