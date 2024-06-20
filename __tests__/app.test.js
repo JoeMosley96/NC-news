@@ -93,7 +93,7 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   it("200: should return a valid article object when passed a valid article id for an article with no votes", () => {
     return request(app)
       .get("/api/articles/2")
@@ -374,7 +374,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/1/comments")
-      .send(newComment)
+      .send({comment: newComment})
       .expect(201)
       .then(({ body }) => {
         const comment = body.comment;
@@ -396,7 +396,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/100000/comments")
-      .send(newComment)
+      .send({comment: newComment})
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("Article not found");
@@ -410,7 +410,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/pigeon/comments")
-      .send(newComment)
+      .send({comment: newComment})
       .expect(400)
       .then((data) => {
         expect(data.body.msg).toBe("Bad request");
@@ -425,7 +425,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/1/comments")
-      .send(newComment)
+      .send({comment: newComment})
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("User not found");
@@ -433,7 +433,7 @@ describe.only("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id", () => {
+describe.only("PATCH /api/articles/:article_id", () => {
   it("200: should return the selected article with the correct new number of votes - where article initially has no votes", () => {
     const voteObj = { inc_votes: 3 };
     return request(app)

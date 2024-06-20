@@ -124,12 +124,13 @@ const fetchComments = (article_id) => {
 const writeComment = (article_id, { body, votes, author }) => {
   let sqlQuery = "SELECT * FROM users WHERE username = $1";
   let queryValues = [author];
+  console.log(author, "<-- post author - in model")
 
   return db
     .query(sqlQuery, queryValues)
     .then(({ rows }) => {
       if (!rows.length) {
-        return Promise.reject({ status: 404, msg: `${author} not found` });
+        return Promise.reject({ status: 404, msg: `User not found` });
       } else {
         sqlQuery = "SELECT * FROM articles WHERE article_id = $1";
         queryValues = [article_id];
