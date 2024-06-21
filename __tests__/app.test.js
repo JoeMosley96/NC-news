@@ -17,7 +17,7 @@ afterAll(() => {
   connection.end();
 });
 
-describe("GET /api/topics", () => {
+describe.only("GET /api/topics", () => {
   it("200: should respond with a 200 status code ", () => {
     return request(app).get("/api/topics").expect(200);
   });
@@ -25,8 +25,8 @@ describe("GET /api/topics", () => {
   it("200: should return an array", () => {
     return request(app)
       .get("/api/topics")
-      .then((data) => {
-        expect(Array.isArray(data.body)).toBe(true);
+      .then(({body}) => {
+        expect(Array.isArray(body.topics)).toBe(true);
       });
   });
 
@@ -35,7 +35,7 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        const topics = body;
+        const topics = body.topics;
         expect(topics).toHaveLength(3);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
@@ -58,8 +58,8 @@ describe("GET /api/topics", () => {
       .then(() => {
         return request(app).get("/api/topics").expect(200);
       })
-      .then((data) => {
-        expect(data.body).toEqual([]);
+      .then(({body}) => {
+        expect(body.topics).toEqual([]);
       });
   });
 
@@ -310,7 +310,7 @@ describe("GET /api/articles", () => {
   });
   it("404: responds with an error message when the error endpoint is spelt incorrectly", () => {
     return request(app)
-      .get("/api/articlez")
+      .get("/api/articles")
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("Route not found");
@@ -318,7 +318,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   it("200: should respond with all comments for the given article ID", () => {
     return request(app)
       .get("/api/articles/1/comments")
