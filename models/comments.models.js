@@ -27,7 +27,6 @@ const changeComment = (comment_id, inc_votes) => {
   return db
     .query(sqlQuery, queryValues)
     .then(({ rows }) => {
-      console.log(rows)
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "Comment not found" });
       } else {

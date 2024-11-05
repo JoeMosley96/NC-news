@@ -9,7 +9,6 @@ beforeEach(() => {
   return seed(data);
 });
 
-
 afterAll(() => {
   connection.end();
 });
@@ -22,7 +21,7 @@ describe("GET /api/topics", () => {
   it("200: should return an array", () => {
     return request(app)
       .get("/api/topics")
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(Array.isArray(body.topics)).toBe(true);
       });
   });
@@ -55,7 +54,7 @@ describe("GET /api/topics", () => {
       .then(() => {
         return request(app).get("/api/topics").expect(200);
       })
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.topics).toEqual([]);
       });
   });
@@ -371,7 +370,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/1/comments")
-      .send({comment: newComment})
+      .send({ comment: newComment })
       .expect(201)
       .then(({ body }) => {
         const comment = body.comment;
@@ -393,7 +392,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/100000/comments")
-      .send({comment: newComment})
+      .send({ comment: newComment })
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("Article not found");
@@ -407,7 +406,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/pigeon/comments")
-      .send({comment: newComment})
+      .send({ comment: newComment })
       .expect(400)
       .then((data) => {
         expect(data.body.msg).toBe("Bad request");
@@ -422,7 +421,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     };
     return request(app)
       .post("/api/articles/1/comments")
-      .send({comment: newComment})
+      .send({ comment: newComment })
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("User not found");
@@ -527,25 +526,23 @@ describe("DELETE /api/comments/:comment_id", () => {
       })
       .then(({ rows }) => {
         expect(rows.length).toBe(0);
-      }); 
-  })
-  it('404: should respond with a 404 error message if the comment id is well formed but non-existant', () => {
-    return request(app)
-    .delete("/api/comments/10000")
-    .expect(404)
-    .then((data) => {
-      expect(data.body.msg).toBe("Comment not found");
-    });
-    
+      });
   });
-  it('400: should respond with a 400 error message if the comment id is not well formed', () => {
+  it("404: should respond with a 404 error message if the comment id is well formed but non-existant", () => {
     return request(app)
-    .delete("/api/comments/greyhound")
-    .expect(400)
-    .then((data) => {
-      expect(data.body.msg).toBe("Bad request");
-    });
-    
+      .delete("/api/comments/10000")
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Comment not found");
+      });
+  });
+  it("400: should respond with a 400 error message if the comment id is not well formed", () => {
+    return request(app)
+      .delete("/api/comments/greyhound")
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
   });
 });
 
@@ -557,8 +554,8 @@ describe("GET /api/users", () => {
   it("200: should return an array", () => {
     return request(app)
       .get("/api/users")
-      .then(({body}) => {
-        const {users} = body
+      .then(({ body }) => {
+        const { users } = body;
         expect(Array.isArray(users)).toBe(true);
       });
   });
@@ -568,13 +565,13 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        const {users} = body;
+        const { users } = body;
         expect(users).toHaveLength(4);
         users.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
-            avatar_url : expect.any(String)
+            avatar_url: expect.any(String),
           });
         });
       });
@@ -607,17 +604,17 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/users/:username", () =>{
+describe("GET /api/users/:username", () => {
   it("200: should return a valid user object when passed a valid username", () => {
     return request(app)
       .get("/api/users/lurker")
       .expect(200)
       .then((data) => {
-        expect(data.body.user).toMatchObject( {
-          username: 'lurker',
-          name: 'do_nothing',
+        expect(data.body.user).toMatchObject({
+          username: "lurker",
+          name: "do_nothing",
           avatar_url:
-            'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
         });
       });
   });
@@ -627,32 +624,30 @@ describe("GET /api/users/:username", () =>{
       .get("/api/users/lorker")
       .expect(404)
       .then((data) => {
-        console.log(data)
         expect(data.body.msg).toBe("User not found");
       });
   });
+});
 
-})
-
-describe.only('PATCH/api/comments/:comment_id', () => {
-  it("200: should return the correct comment with the correct new number of votes - where the comment initially has no votes", ()=>{
+describe("PATCH/api/comments/:comment_id", () => {
+  it("200: should return the correct comment with the correct new number of votes - where the comment initially has no votes", () => {
     const voteObj = { inc_votes: 3 };
     return request(app)
-    .patch("/api/comments/5")
-    .send(voteObj)
-    .expect(200)
-    .then((data)=>{
-      expect(data.body.comment).toMatchObject({
-        comment_id: 5,
-        body: 'I hate streaming noses',
-        article_id: 1,
-        author: 'icellusedkars',
-        votes: 3,
-        created_at: expect.any(String)
-      })
-    })
-  })
-  
+      .patch("/api/comments/5")
+      .send(voteObj)
+      .expect(200)
+      .then((data) => {
+        expect(data.body.comment).toMatchObject({
+          comment_id: 5,
+          body: "I hate streaming noses",
+          article_id: 1,
+          author: "icellusedkars",
+          votes: 3,
+          created_at: expect.any(String),
+        });
+      });
+  });
+
   it("200: should return the selected comment with the correct new number of votes - where comment already has votes", () => {
     const voteObj = { inc_votes: 1 };
     return request(app)
@@ -660,16 +655,16 @@ describe.only('PATCH/api/comments/:comment_id', () => {
       .send(voteObj)
       .expect(200)
       .then((data) => {
-        expect(data.body.comment).toMatchObject(  {
+        expect(data.body.comment).toMatchObject({
           body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
           votes: 17,
           author: "butter_bridge",
           article_id: 9,
-          created_at: expect.any(String)
-        },);
+          created_at: expect.any(String),
+        });
       });
   });
-  it.only("404: should respond with a 404 error if the comment id is well formed but non-existant", () => {
+  it("404: should respond with a 404 error if the comment id is well formed but non-existant", () => {
     const voteObj = { inc_votes: 3 };
     return request(app)
       .patch("/api/comments/10000")
@@ -712,5 +707,98 @@ describe.only('PATCH/api/comments/:comment_id', () => {
   });
 });
 
-
-
+describe.only("POST /api/articles/", () => {
+  it("201: should post a new article when an image url is provided", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "reasons why I have covered my children in paint",
+      body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+      topic: "mitch",
+      article_img_url:
+        "https://www.decowoerner.com/en/decorative-paint-bucket-23-cm-high-green_9566/",
+      votes:0,
+      comment_count:0
+    };
+    return request(app)
+      .post("/api/articles")
+      .send({ article: newArticle })
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 14,
+          author: "icellusedkars",
+          title: "reasons why I have covered my children in paint",
+          body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+          topic: "mitch",
+          article_img_url:
+            "https://www.decowoerner.com/en/decorative-paint-bucket-23-cm-high-green_9566/",
+          created_at: expect.any(String),
+          votes:0,
+          comment_count:0
+        });
+      });
+  });
+  it("201: should post a new article when no image url is provided", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "reasons why I have covered my children in paint",
+      body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send({ article: newArticle })
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 14,
+          author: "icellusedkars",
+          title: "reasons why I have covered my children in paint",
+          body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+          topic: "mitch",
+          article_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes:0,
+          comment_count:0
+        });
+      });
+  });
+  it("404: should return a 404 error message when passed a non existant username", () => {
+    const newArticle = {
+      author: "peter",
+      title: "reasons why I have covered my children in paint",
+      body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+      topic: "mitch",
+      article_img_url:
+        "https://www.decowoerner.com/en/decorative-paint-bucket-23-cm-high-green_9566/",
+      votes:0,
+      comment_count:0
+    };
+    return request(app)
+      .post("/api/articles")
+      .send({ article: newArticle })
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Username not found");
+      });
+  });
+  it("404: should return a 404 error message when passed a non existant topic name", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "reasons why I have covered my children in paint",
+      body: "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+      topic: "clowns",
+      article_img_url:
+        "https://i.ytimg.com/vi/NQvbqTwNEaU/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGH8gEyhJMA8=&rs=AOn4CLCVxc1A5wmhw_po3dvYB7uzpFMv6g",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send({ article: newArticle })
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Topic not found");
+      });
+  });
+});

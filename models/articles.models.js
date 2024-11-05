@@ -175,10 +175,54 @@ const changeArticle = (article_id, inc_votes) => {
     });
 };
 
+const writeArticle = ({ title, topic, author, body,  article_img_url="https://i.ytimg.com/vi/NQvbqTwNEaU/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGH8gEyhJMA8=&rs=AOn4CLCVxc1A5wmhw_po3dvYB7uzpFMv6g" }) => {
+  let sqlQuery = "SELECT * FROM users WHERE username = $1";
+  let queryValues = [author];
+  return db
+    .query(sqlQuery, queryValues)
+    .then(({ rows }) => {
+      
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: `Username not found` });
+      } else {
+        sqlQuery = "SELECT * FROM topics WHERE slug = $1";
+        queryValues = [topic];
+        return db.query(sqlQuery, queryValues)
+
+      }
+    })
+    .then(({rows})=>{
+      if(!rows.length){
+        return Promise.reject({status: 404, msg: "Topic not found"})
+      } else{
+        return db.query(
+          `INSERT INTO articles (title, topic, author, body, article_img_url, votes)
+          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [title, topic, author, body, article_img_url, 0]
+        )
+      }
+    })
+    .then((result)=>{
+      const {article_id, author, title, body, topic, article_img_url, created_at, votes}= result.rows[0]
+      return {
+        article_id,
+        author,
+        title,
+        body,
+        topic,
+        article_img_url,
+        created_at,
+        votes,
+        comment_count:0
+      }
+    })
+
+};
+
 module.exports = {
   fetchArticle,
   fetchArticles,
   fetchComments,
   writeComment,
   changeArticle,
+  writeArticle
 };

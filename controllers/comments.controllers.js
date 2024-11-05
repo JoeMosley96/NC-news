@@ -17,7 +17,6 @@ const patchComment = (req, res, next) => {
 
     changeComment(comment_id, inc_votes)
     .then((data) => {
-        console.log(data)
         res.status(200).send({comment:data})
     })
     .catch((err)=>{

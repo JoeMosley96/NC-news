@@ -133,7 +133,7 @@
     }
   },
   "PATCH /api/comments/:comment_id":{
-    "description": "returns the comment with the new number of votes",
+    "description": "updates the votes on the specified comment and returns the comment with the new number of votes",
     "queries": ["inc_votes"],
     "exampleResponse":{
       "comment":
@@ -146,6 +146,22 @@
           "created_at": 1602433380000
       }
     }
+  },
+  "POST /api/articles/":{
+    "description": "posts an article to the database and returns the article with the vote and comment count",
+    "queries":["article"],
+    "exampleResponse":{
+      "article":{
+        "article_id": 14,
+        "author": "icellusedkars",
+        "title": "reasons why I have covered my children in paint",
+        "body": "People often say to me - Why are your children crying? What is wrong with you? I'm calling the police! The same old questions come up time and time again, people are so ignorant. I do this because it teaches my children to be resiliant and humble. It also makes them easy to find if they go missing.",
+        "topic": "mitch",
+        "article_img_url": "https://i.ytimg.com/vi/NQvbqTwNEaU/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGH8gEyhJMA8=&rs=AOn4CLCVxc1A5wmhw_po3dvYB7uzpFMv6g",
+        "created_at": "2024-11-05T19:07:25.966Z",
+        "votes":0,
+        "comment_count":0
+      }
   }
-
+}
 }
