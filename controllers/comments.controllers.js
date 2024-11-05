@@ -1,4 +1,4 @@
-const {removeComment} = require("../models/comments.models")
+const {removeComment, changeComment} = require("../models/comments.models")
 
 const deleteComment = (req, res, next) => {
     const { comment_id } = req.params;
@@ -11,4 +11,18 @@ const deleteComment = (req, res, next) => {
     })
 };
 
-module.exports = {deleteComment}
+const patchComment = (req, res, next) => {
+    const { comment_id } = req.params;
+    const {inc_votes} = req.body
+
+    changeComment(comment_id, inc_votes)
+    .then((data) => {
+        console.log(data)
+        res.status(200).send({comment:data})
+    })
+    .catch((err)=>{
+        next(err)
+    })
+};
+
+module.exports = {deleteComment, patchComment}

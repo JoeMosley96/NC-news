@@ -131,6 +131,21 @@
           "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         }
     }
+  },
+  "PATCH /api/comments/:comment_id":{
+    "description": "returns the comment with the new number of votes",
+    "queries": ["inc_votes"],
+    "exampleResponse":{
+      "comment":
+      {
+          "comment_id": 2,
+          "body": "This is a bad article name",
+          "votes": 1,
+          "author": "butter_bridge",
+          "article_id": 6,
+          "created_at": 1602433380000
+      }
+    }
   }
 
 }

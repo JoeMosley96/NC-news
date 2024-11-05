@@ -634,4 +634,83 @@ describe("GET /api/users/:username", () =>{
 
 })
 
+describe.only('PATCH/api/comments/:comment_id', () => {
+  it("200: should return the correct comment with the correct new number of votes - where the comment initially has no votes", ()=>{
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+    .patch("/api/comments/5")
+    .send(voteObj)
+    .expect(200)
+    .then((data)=>{
+      expect(data.body.comment).toMatchObject({
+        comment_id: 5,
+        body: 'I hate streaming noses',
+        article_id: 1,
+        author: 'icellusedkars',
+        votes: 3,
+        created_at: expect.any(String)
+      })
+    })
+  })
+  
+  it("200: should return the selected comment with the correct new number of votes - where comment already has votes", () => {
+    const voteObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(voteObj)
+      .expect(200)
+      .then((data) => {
+        expect(data.body.comment).toMatchObject(  {
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 17,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: expect.any(String)
+        },);
+      });
+  });
+  it.only("404: should respond with a 404 error if the comment id is well formed but non-existant", () => {
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/comments/10000")
+      .send(voteObj)
+      .expect(404)
+      .then((data) => {
+        expect(data.body.msg).toBe("Comment not found");
+      });
+  });
+  it("400: should respond with a 400 error if the comment id is not well formed", () => {
+    const voteObj = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/comments/clogs")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+
+  it("400: should respond with a 400 error if the request body contains an invalid key", () => {
+    const voteObj = { inc_votez: 3 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+  it("400: should respond with a 400 error if the request body contains an invalid value", () => {
+    const voteObj = { inc_votes: "clogs" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(voteObj)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Bad request");
+      });
+  });
+});
+
+
 

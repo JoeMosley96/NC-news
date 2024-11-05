@@ -59,7 +59,6 @@ const patchArticle = (req, res, next)=>{
         res.status(200).send({article:data})
     })
     .catch((err)=>{
-    
         next(err)
     })
 }
