@@ -27,7 +27,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
 
       const usersTablePromise = db.query(`
       CREATE TABLE users (
-        username VARCHAR PRIMARY KEY,
+        username VARCHAR(15) PRIMARY KEY,
         name VARCHAR NOT NULL,
         avatar_url VARCHAR
       );`);

@@ -9,9 +9,6 @@ beforeEach(() => {
   return seed(data);
 });
 
-beforeEach(() => {
-  return seed(data);
-});
 
 afterAll(() => {
   connection.end();
@@ -609,5 +606,32 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () =>{
+  it("200: should return a valid user object when passed a valid username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then((data) => {
+        expect(data.body.user).toMatchObject( {
+          username: 'lurker',
+          name: 'do_nothing',
+          avatar_url:
+            'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+        });
+      });
+  });
+
+  it("404: should return a 404 error message when passed a well formed but non existant username", () => {
+    return request(app)
+      .get("/api/users/lorker")
+      .expect(404)
+      .then((data) => {
+        console.log(data)
+        expect(data.body.msg).toBe("User not found");
+      });
+  });
+
+})
 
 
