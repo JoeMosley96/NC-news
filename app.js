@@ -1,11 +1,6 @@
 const express = require ("express")
-const {getTopics} = require("./controllers/topics.controllers")
-const {getEndpoints} = require("./controllers/api.controllers")
-const {getArticle, getArticles, getComments, postComment, patchArticle} = require("./controllers/articles.controllers")
-const {deleteComment} = require("./controllers/comments.controllers")
-const {getUsers} = require("./controllers/users.controllers")
+const apiRouter = require('./routes/api-router')
 const cors = require("cors")
-
 const app = express()
 
 app.use(cors())
@@ -13,23 +8,7 @@ app.use(cors())
 app.use(express.json())
 
 //requests
-app.get("/api/topics", getTopics)
-
-app.get("/api", getEndpoints)
-
-app.get("/api/articles/:article_id", getArticle)
-
-app.get("/api/articles", getArticles)
-
-app.get("/api/articles/:article_id/comments", getComments)
-
-app.post("/api/articles/:article_id/comments", postComment)
-
-app.patch("/api/articles/:article_id", patchArticle)
-
-app.delete("/api/comments/:comment_id", deleteComment)
-
-app.get("/api/users", getUsers)
+app.use('/api', apiRouter)
 
 //catch all middleware block
 app.all('*', (req, res) => {

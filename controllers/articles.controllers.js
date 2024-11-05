@@ -40,11 +40,9 @@ const getComments = (req, res, next)=>{
 const postComment = (req, res, next)=>{
     const {article_id}=req.params
     const {comment} = req.body
-    console.log(req.body,"<--post req.body")
-    console.log(comment,"<--post commentBody")
+
     writeComment(article_id,comment)
     .then((data)=>{
-        console.log(data, "<--post returned data")
         res.status(201).send({comment:data})
     })
     .catch((err)=>{
@@ -55,8 +53,6 @@ const postComment = (req, res, next)=>{
 const patchArticle = (req, res, next)=>{
     const {article_id}=req.params
     const {inc_votes}=req.body
-    console.log(req.body,"<--patch req.body")
-    console.log(inc_votes,"<--patch inc_votes")
 
     changeArticle(article_id,inc_votes)
     .then((data)=>{

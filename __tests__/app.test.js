@@ -17,7 +17,7 @@ afterAll(() => {
   connection.end();
 });
 
-describe.only("GET /api/topics", () => {
+describe("GET /api/topics", () => {
   it("200: should respond with a 200 status code ", () => {
     return request(app).get("/api/topics").expect(200);
   });
@@ -308,9 +308,9 @@ describe("GET /api/articles", () => {
         expect(data.body.msg).toBe("Your sort query is invalid");
       });
   });
-  it("404: responds with an error message when the error endpoint is spelt incorrectly", () => {
+  it("404: responds with an error message when the endpoint is spelt incorrectly", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articlez")
       .expect(404)
       .then((data) => {
         expect(data.body.msg).toBe("Route not found");
@@ -609,3 +609,5 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+

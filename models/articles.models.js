@@ -111,7 +111,6 @@ const fetchComments = (article_id) => {
       sqlQuery = "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC";
       return db.query(sqlQuery, queryValues)
       .then(({ rows }) => {
-        console.log(rows)
         if (!rows.length) {
           return [];
         } else {
@@ -125,7 +124,6 @@ const fetchComments = (article_id) => {
 const writeComment = (article_id, { body, votes, author }) => {
   let sqlQuery = "SELECT * FROM users WHERE username = $1";
   let queryValues = [author];
-  console.log(author, "<-- post author - in model")
 
   return db
     .query(sqlQuery, queryValues)
