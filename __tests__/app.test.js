@@ -604,7 +604,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/users/:username", () => {
+describe.only("GET /api/users/:username", () => {
   it("200: should return a valid user object when passed a valid username", () => {
     return request(app)
       .get("/api/users/lurker")
@@ -707,7 +707,7 @@ describe("PATCH/api/comments/:comment_id", () => {
   });
 });
 
-describe.only("POST /api/articles/", () => {
+describe("POST /api/articles/", () => {
   it("201: should post a new article when an image url is provided", () => {
     const newArticle = {
       author: "icellusedkars",

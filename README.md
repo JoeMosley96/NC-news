@@ -10,6 +10,13 @@ The available endpoints support the following features:
 * Voting on comments
 * Posting articles
 
+Tech stack:  
+* Express.js
+* Jest  
+* Node.js  
+* Node Postgres
+* PostgreSQL
+
 Link to hosted version
 https://jm-news.onrender.com
 
